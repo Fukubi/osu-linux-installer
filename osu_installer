@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+clear
+
+echo ""
+
+echo "----------------------------------"
+echo "  OSU! LINUX INSTALLER BY FUKUBI  "
+echo "----------------------------------"
+
+echo ""
+
+if [ -e ./installer_osu.exe  ]
+	then
+		echo "Osu! installer already exists, the script will not download this file..."
+	else
+		echo "Download Osu! installer from the official website..."
+		wget https://m1.ppy.sh/r/osu!install.exe -O installer_osu.exe -q --show-progress
+fi
+
+if [ ! -e ~/games/  ]
+	then
+		echo "Creating folder games in the home directory..."
+		mkdir ~/games
+fi
+
+echo "Installing Osu! using wine"
+WINEPREFIX=~/games/osu-prefix wine installer_osu.exe &> /dev/null
+
+echo "Creating Osu! shortcut"
+echo "#\!/usr/bin/env bash" >> osu_shortcut
+echo "WINEPREFIX=~/games/osu-prefix wine ~/games/osu-prefix/drive_c/users/$USER/Local\ Settings/Application\ Data/osu\!/osu\!.exe &> /dev/null" >> osu_shortcut 
+chmod +x osu_shortcut
+
+echo "Creating beatmap installer"
+echo "#\!/usr/bin/env bash" >> osu_beatmap_installer
+echo "mv '\$1' ~/games/osu-prefix/drive_c/users/$USER/Local\ Settings/Application\ Data/osu\!/Songs" >> osu_beatmap_installer
+chmod +x osu_beatmap_installer
+
+echo "Creating Osu! uninstaller"
+echo "#\!/usr/bin/env bash" >> osu_uninstaller
+echo "rm -rf ~/games/osu-prefix; rm ./osu_shortcut; rm ./osu_beatmap_installer; rm ./osu_uninstaller" >> osu_uninstaller
+chmod +x osu_uninstaller
+
+echo "Removing downloaded installer..."
+rm ./installer_osu.exe
+
+echo ""
